@@ -34,8 +34,7 @@ const pool = mysql.createPool({
 pool.getConnection()
     .then(conn => {
         console.log('MySQL connected Successfully');
-        conn.release(), // toujours liberer la connexion apres usage
-
+        conn.release(); // toujours liberer la connexion apres usage
     })
     .catch(err => {
         console.error('MySQL connection failed', err.message);
