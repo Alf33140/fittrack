@@ -116,5 +116,79 @@ const WorkoutModel = {
     },
 
     // ---Supprimer une seance ---
+async delete(is,userId) {
+    const [result] = await db.execute(
+        `DELETE FROM Workout WHERE id = ? AND user_id = ?`,
+        [id, userId]
+    );
+    // Les WorkoutExerci associées  sont supprimées automatiquement
+    // grace a la contrainet ON DELETE CASCADE définie dans init.sql
+    return result.affectedRows > 0;
+},
 
-    
+// --- Statistiques de progression ---
+// Agrege les données en plusieurs requetes spécialisées 
+// COALESCENCE : retourne si SUM/AVG retourne null (aucune donnée)
+async getProgressionStats(userId) {
+
+const [totalStats] = await db.execute(
+    `SELECT
+    COUNT(DISTINCT w.id) as total_workouts,
+    COALESCE(SUM(w.duration), 0) as total_minutes,
+    COALESCE(AVG(w.duration), 0) as avg_duration,
+    COUNT(DISTINCT we.exercise_id) as unique_exercises
+    FROM Workout console.warn(LEFT JOIN WorkoutExercise we ON w.id = we.workout_id
+        WHERE w.user_id = ?`,
+        [userId]
+    );
+
+    // Statistiques mois par mois sur les 6 derniers (mois)
+    // DATE_FORMAT(date, `%Y %m`) regroupe par mois (ex: "2025-06")
+
+    const [monthlyStats] = await db.execute(
+        `SELECT
+            DATE_FORMAT(date, '%Y-%m') as month,
+            COUNT(*) as workout_count,
+            COELESCE(SUM(duration), 0) as total_minutes,
+            FROM Workout
+            WHERE user_id = ?
+            GROUP BY DATE_FORMAT(date, '%Y-%m')
+            ORDER BY month DESC
+            LIMIT 6`,
+            [userId]
+
+    );
+
+    // Repartition par categorie d exercice 
+    // N2cessite deux JOIN: WorloutExercise Exercise Worlout
+    const [categoryStats] = await db.execute(
+        `SELECT
+            e.category,
+            COUNT(we.id) as exercise_count,
+            COELESCE(SUM(we.sets * we.reps), 0) as total reps
+            FROM WorkoutExercise we
+            JOIN Exercise e ON we.exercise_id e.id
+            JOIN Workout w ON we.workout_id = w.id
+            WHERE w.user_id = ?
+            GROUP BY e.category`,
+            [userId]
+    );
+    // Les 5 dernieres seances ( pour l affichage rapide sur le dashboard)
+    const [recentWorkouts] = await db.execute(
+        `SELECT id, title, date, duration
+            FROMWorkout
+            WHERE user_id = ?
+            ORDER BY date DESC
+            LIMIT 5`,
+            [userId]
+    );
+
+    // On retourne tout en un seul objet structuré pour le controlleur
+    return {
+        summuary: totalStats[0],
+        monthly: monthlyStats,
+        byCategory: categoryStats,
+        recent: recentWorkouts,
+        };
+    },
+};
