@@ -99,5 +99,11 @@ export interface ProgressionStats {
             total_reps: number      //Totald es répétitions sur toutes les seances
         }>
         // Dernieres éances (pour la section "Activité recente" du Dashboard)
+        recent: Array<{
+            id: number
+            title: string
+            date: string
+            duration: number | null
+        }>
     }
 }
