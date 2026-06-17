@@ -59,7 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 // --- Register ---
 // Meme logique que login: le backend créé le compte ET retourne le token
     const register = async (data: RegisterData) => {
-        const res = api.post('/auth/register', data)
+        const res = await api.post('/auth/register', data)
         localStorage.setItem('token', (await res).data.token)
         setUser(res.data.user)
     }
@@ -70,7 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const logout = () => {
         localStorage.removeItem('token')
-        setUser() // React re rend les composants - PrivateRoute redirige vers /login
+        setUser(null) // React re rend les composants - PrivateRoute redirige vers /login
     }
 
 // Rendu du Provider ---
