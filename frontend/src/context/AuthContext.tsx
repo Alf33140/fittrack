@@ -25,7 +25,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // loading: empeche d'afficher une page avant de savoir si l'user est connecté
     // Evite le flash  de la page login avant la redirection vers le dashboard
-    const [loading,  setLoading] = useState(true)
+    const [loading,  setLoading] = useState(() => {
+        return !!localStorage.getItem('token')
+    })
 
     // --- Verification du token au demarrage de l app ---
     // useEffect avec [] en dépendance = s execute une seule fois au montage
@@ -40,8 +42,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .catch(() => localStorage.removeItem('token'))
 
         .finally(() => setLoading(false))
-    } else {
-      setLoading(false)
 
     }
   }, [])
@@ -60,7 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 // Meme logique que login: le backend créé le compte ET retourne le token
     const register = async (data: RegisterData) => {
         const res = await api.post('/auth/register', data)
-        localStorage.setItem('token', (await res).data.token)
+        localStorage.setItem('token', res.data.token)
         setUser(res.data.user)
     }
 
