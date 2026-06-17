@@ -7,34 +7,11 @@
 // à n importe quel composant de l arbre, via le hook useAuth
 //========================================================================================
 
-import { createContext, useState, useEffect, ReactNode } from 'react'
-import api from '../services/api'
-import { user } from '../types'
+import { useState, useEffect, type ReactNode } from 'react'
+import api from '../services/api.ts'
+import {AuthContext, RegisterData} from './AuthContext'
+import { type User } from '../types/index.ts'
 
-// --- Type TypeScript ---
-//Interface decrivant les donnees que le contexte expose
-interface RegisterData {
-    username: string
-    email: string
-    password: string
-    weight?: number // ? = optioonnel en TypeScript
-    goal?: string
-}
-
-export interface AuthContextType {
-    user: User | null  //null = non connecté
-    loading: boolean // true pendant la verification  initiale du token
-    login: (email: string, password: string) => Promise<void>
-    register: (data: RegisterData) => Promise<void>
-    logout: () => void
-}
-
-//--- Creation du contexte ---
-// createContext(null) : valeur par defaut = null (sans provider)
-// le type generique <AuthContextType | null>  permet à TypeScript de savoir
-
-// ce que contient le contexte
-export const Authcontext = createContext<AuthContextType | null>(null)
 
 //=============================================================================
 //AuthProvider - Composant qui enveloppe l application
@@ -48,26 +25,60 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // loading: empeche d'afficher une page avant de savoir si l'user est connecté
     // Evite le flash  de la page login avant la redirection vers le dashboard
-    const [loading,  setloading] = useState(true)
+    const [loading,  setLoading] = useState(true)
 
     // --- Verification du token au demarrage de l app ---
     // useEffect avec [] en dépendance = s execute une seule fois au montage
     // Si le token est déja stocké (session précédente), on verifie sa validité
     
     useEffect(() => {
-        const token = localStorage.getItem('token')
-        if (token) {
-            //GET api/autn/me retourne le profil si le token est valide
-            api
-                .get('/auth/me')
-                .then((res) => setUser('res.data.user'))
-                //si le token est expiré, l intercepteur axios le supprime(voir api.ts)
-                .catch(() => localStorage.removeItem('token'))
-                .finally(() => setloading(false)) // Fin du chargement dans tous les cas
-        } else {
-            setLoading(false) // Pas de token - On sait deja qu il n est pas connecté
-        }
-    }, [])
-}
+    const token = localStorage.getItem('token')
+    if (token) {
+      api.get('/auth/me')
+        .then((res) => setUser(res.data.user))
+
+        .catch(() => localStorage.removeItem('token'))
+
+        .finally(() => setLoading(false))
+    } else {
+      setLoading(false)
+
+    }
+  }, [])
+
 
 // --- Login ---
+// async/await : onattends la reponse avant de continuer
+// Lance une except la requete echoue (catch géré dans le composant login)
+    const login = async (email: string, password: string) => {
+        const res = await api.post('/auth/login', {email, password})
+        localStorage.setItem('token', res.data.token) //persiste le token entre les sessions
+        setUser(res.data.user)
+    }
+
+// --- Register ---
+// Meme logique que login: le backend créé le compte ET retourne le token
+    const register = async (data: RegisterData) => {
+        const res = api.post('/auth/register', data)
+        localStorage.setItem('token', (await res).data.token)
+        setUser(res.data.user)
+    }
+
+// --- Logout ---
+// coté Client: on supprime le token et on vide l etat
+// coté Serveur: les JWT sont stateless (pas de session a invalider)
+
+    const logout = () => {
+        localStorage.removeItem('token')
+        setUser() // React re rend les composants - PrivateRoute redirige vers /login
+    }
+
+// Rendu du Provider ---
+// AuthContext.Provider rend les valeurs accessibles à tous les composants enfants
+// via useContext(AuthContext) ou le hook useAuth (hooks/useAuth.ts)
+    return (
+        <AuthContext.Provider value={{ user, loading, login, register, logout}}>
+            {children}
+        </AuthContext.Provider>
+    )
+}
