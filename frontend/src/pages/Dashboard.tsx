@@ -51,7 +51,7 @@ function formatDate(d: string) {
 }
 
 // style du tooltip (info-bulle) du graphique Recharts
-const toolTipStyle = {
+const tooltipStyle = {
     backgroundColor: '#1E293B',
     border: '1px solid #334155',
     borderRadius: '8px',
@@ -74,9 +74,9 @@ export default function Dashboard() {
     // (l'API des retourne du plus recent au plus ancien)
 
     const chartData = stats
-        ? [...stats.monthly].reverse().map(() => ({
+        ? [...stats.monthly].reverse().map((m) => ({
             name: formatMonth(m.month),
-            Séances: m.worout_count,
+            Séances: m.workout_count,
             Minutes: m.total_minutes,
         }))
     : []
@@ -165,17 +165,18 @@ export default function Dashboard() {
                 }
                 const color = colors[cat.category] ?? '#94A3B8'
                 return (
-                  <div key={cat.category}>
+                    <div key={cat.category}>
                     <div className="flex justify-between text-xs mb-1.5">
                       <span className="text-slate-400">{cat.category}</span>
                       <span className="text-slate-300 font-medium">{cat.exercise_count}</span>
                     </div>
-                    {/* Barre de progression avec largeur dynamique via style inline */}
-                    <div className="h-1.5 bg-slate-700 rounded-full overflow-hidden">
-                      <div
-                        className="h-full rounded-full transition-all"
+                  {/* Barre de progression avec largeur dynamique via style online */}
+
+                  <div className='h-1.5 bg-slate-700 rounded-full overflow-hidden'>
+                    <div
+                        className='h-full rounded-full transition-all'
                         style={{ width: `${pct}%`, backgroundColor: color }}
-                      />
+                   />
                     </div>
                   </div>
                 )
@@ -188,11 +189,11 @@ export default function Dashboard() {
       </div>
 
       {/* Liste des 5 dernières séances */}
-      <div className="bg-[#1E293B] border border-slate-700/50 rounded-2xl p-5">
+       <div className="bg-[#1E293B] border border-slate-700/50 rounded-2xl p-5">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-sm font-semibold text-slate-200">Dernières séances</h2>
           <Link to="/workouts" className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors">
-            Voir tout →
+          Voir tout →
           </Link>
         </div>
         {stats?.recent.length ? (
@@ -201,7 +202,7 @@ export default function Dashboard() {
               // Chaque séance est un lien cliquable vers son détail
               <Link key={w.id} to={`/workouts/${w.id}`} className="flex items-center justify-between py-3 group">
                 <div>
-                  <p className="text-sm font-medium text-slate-200 group-hover:text-indigo-300 transition-colors">
+                 <p className="text-sm font-medium text-slate-200 group-hover:text-indigo-300 transition-colors">
                     {w.title}
                   </p>
                   <p className="text-xs text-slate-500 mt-0.5">{formatDate(w.date)}</p>
@@ -216,16 +217,16 @@ export default function Dashboard() {
             ))}
           </div>
         ) : (
-          <p className="text-slate-500 text-sm text-center py-8">
-            Aucune séance.{' '}
-            <Link to="/workouts" className="text-indigo-400 hover:underline">
-              Commence maintenant →
+          <p className='text-slate-500 text-sm text-center py-8'>
+            Aucune License.{' '}
+            <Link to="/workouts" className='text-indigo-400 hover:underline'>
+              Commence maintenat 
             </Link>
           </p>
         )}
       </div>
     </div>
-  )
+    )
 }
 
 // ============================================================
@@ -233,6 +234,7 @@ export default function Dashboard() {
 // Défini dans le même fichier car utilisé uniquement ici.
 // React.ReactNode : n'importe quel contenu React (JSX, string, number...)
 // ============================================================
+
 function StatCard({
   icon, label, value, iconBg,
 }: {
