@@ -7,7 +7,7 @@ import PrivateRoute from './components/PrivateRoute'
 import Layout from './components/Layout/Layout'
 import Login from './pages/Login'
 import Register from './pages/Register'
-// import Dashboard from './pages/Dashboard'
+import Dashboard from './pages/Dashboard'
 // import Exercises from './pages/Exercises'
 // import Workouts from './pages.Workouts'
 // import WorkoutDetail from './pages WorkoutDetail'
@@ -40,8 +40,8 @@ export default function App() {
           Toutes les pages imbriquées héritent de cette protection.*/}
             <Route element={<PrivateRoute />}>
               <Route element={<Layout />}>
-                {/* <Route path="/Dashboard" element={<Dashboard />}  />
-                <Route path="/Exercises" element={<Exercises />}  />
+                <Route path="/Dashboard" element={<Dashboard />}  />
+                {/* <Route path="/Exercises" element={<Exercises />}  />
                 <Route path="/Workouts" element={<Workouts />}  /> */}
                 {/* :id = parametren dynamique récupéré avec useParams( WorkoutDetail) */}
                 {/* <Route path="/Workouts/:id" element={<WorkoutDetail />}  />
