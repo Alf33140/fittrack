@@ -11,7 +11,7 @@ const jwt =  require('jsonwebtoken');
 //
 // Pour vérifier on resigne  le header=payload avecJWT_SECRET et on compare: si ca corrspond 
 // le token est authentique et non modifié
-const authMiddelware = (req, res, next) => {
+const authMiddleware = (req, res, next) => {
 // autorisation du header autorization de la requete entrante
     const authHeader = req.headers.authoriszation;
 

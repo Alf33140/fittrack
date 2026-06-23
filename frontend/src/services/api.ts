@@ -23,9 +23,15 @@ const api = axios.create({
 // Gere les erreurs http de facon centralisée
 // Premier argument: callback appelé  si la reponse est un succes (2xx)
 // Deuxieme argument: callback appelé si la reponse est une erreur
-api.interceptors.response.use(
-    (response) => response, // Succes: on laisse passer la reponse sans modification
-)
+api.interceptors.request.use((config) => {
+  // Le token est stocké dans localStorage après le login
+  const token = localStorage.getItem('token')
+  if (token) {
+    // Format attendu par le backend : "Bearer eyJhbGci..."
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config // On retourne la config modifiée pour continuer la requête
+})
 
 //=====================================================================================
 // INTERRUPTEUR DE REPONSE

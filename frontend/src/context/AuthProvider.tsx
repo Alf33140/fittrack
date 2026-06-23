@@ -10,7 +10,7 @@
 import { useState, useEffect, type ReactNode } from 'react'
 import api from '../services/api.ts'
 import {AuthContext, RegisterData} from './AuthContext.ts'
-import { type User } from '../types/index.ts'
+import { type User } from '../types/index'
 
 
 //=============================================================================

@@ -28,7 +28,7 @@ const WorkoutModel = {
         return rows;
     },
 
-    // ---- Recupérer une séance avec tous le sexercices ----
+    // ---- Recupérer une séance avec tous les exercices ----
     async findById(id,userId) {
         // on verifie que le seance appartient a l utilisateur (securité!)
         // sans le check, un utilisateur poyurrait lire les seances d un autre

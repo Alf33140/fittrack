@@ -13,8 +13,8 @@ export interface RegisterData {
 export interface AuthContextType {
     user: User | null  //null = non connecté
     loading: boolean // true pendant la verification  initiale du token
-    login: (email: string, password: string) => Promise<void>
-    register: (data: RegisterData) => Promise<void>
+    login: (email: string, password: string) => Promise <void>
+    register: (data: RegisterData) => Promise <void>
     logout: () => void
 }
 

@@ -9,10 +9,15 @@ COPY package*.json ./
 # Copie tout le code source dans /app
 # Fait APRÈS npm install pour bénéficier du cache
 
+RUN npm install && mv /app/node_modules /node_modules
+
+COPY . .
+
 EXPOSE 5000
 # Documentation : ce container utilise le port 5000
 # (la vraie exposition est dans docker-compose.yml)
 
-CMD ["npm", "run", "dev"]
+CMD ["npm","run", "dev"]
 # Commande lancée au DÉMARRAGE du container
 # npm run dev = nodemon server.js (redémarre à chaque m
+

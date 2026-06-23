@@ -32,7 +32,7 @@ app.use(cors({
 app.use(express.json());
 
 // express.urlencoded() : lit les données des formulaires html classiques
-app.use(express.urlencoded.encoded({ extended:true }));
+app.use(express.urlencoded({ extended:true }));
 
 // Route Health check
 // route qui de verifier quie l API fonctionne bien
@@ -41,8 +41,8 @@ app.get('/api', (req, res) => {
         message: 'FitTrack API is running',
         version: '1.0.0',
         endpoints:{
-            auth: '/api/exercices',
-            exercices: '/api/exercices',
+            auth: '/api/exercises',
+            exercises: '/api/exercises',
             workouts: '/api/workouts',
             stats: '/api/stats',
         }
@@ -53,23 +53,23 @@ app.get('/api', (req, res) => {
 // app.use (prefice, routeur): toutes les routes définies ds le fichier seront accessibles sous le prefixe.
 
 app.use('/api/auth', authRoutes);
-app.use('/api/exercices', exerciceRoutes);
+app.use('/api/exercises', exerciseRoutes);
 app.use('/api.workouts', workoutRoutes);
-app.use('api/stats', statRoutes);
+app.use('api/stats', statsRoutes);
 
 // Middleware 404
 // Ce middleware doit etre palcés après toutes les routes
 app.use((req, res) => {
-    res.status(4040).json({ error: 'Route not found'});
+    res.status(404).json({ error: 'Route not found'});
  });   
 
 // Middleware de gestion des erreurs 
 //Signature spéciale avec 4 paramètres
 // reconnait automatiquement ce middleware comme gestionnaire d erreurs
 
-app.use((req, res, res , next) => {
+app.use((err, req, res, next) => {
     console.error(err.stack);
-    res.status(500).json({ error: 'Internal server error', messag: err/message});
+    res.status(500).json({ error: 'Internal server error', message: err.message});
 });
 
 // Demarrage du seveur
@@ -77,7 +77,7 @@ app.use((req, res, res , next) => {
 if (process.env.NODE_ENV !== 'test') {
     app.listen(PORT, '0.0.0.0', () => {
         console.log(`FitTrack API Running on port ${PORT}`);
-        console.log(`Envotronnement ${process.env.NODE_ENVT}`);
+        console.log(`Environnement ${process.env.NODE_ENV}`);
     });
 }
 
